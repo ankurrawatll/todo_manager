@@ -102,7 +102,7 @@ export default function Intro() {
         >
           <Button
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg rounded-xl neon-blue-box-shadow border-none"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/login")}
           >
             Get Started
           </Button>
