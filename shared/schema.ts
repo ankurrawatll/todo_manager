@@ -43,6 +43,8 @@ export const tasks = pgTable("tasks", {
   userId: integer("user_id").references(() => users.id),
   hasReminder: boolean("has_reminder").default(false),
   reminderTime: integer("reminder_time"),
+  completed: boolean("completed").default(false),
+  completedAt: timestamp("completed_at"),
 });
 
 export const insertTaskSchema = createInsertSchema(tasks).pick({
@@ -55,6 +57,8 @@ export const insertTaskSchema = createInsertSchema(tasks).pick({
   userId: true,
   hasReminder: true,
   reminderTime: true,
+  completed: true,
+  completedAt: true,
 });
 
 export type InsertTask = z.infer<typeof insertTaskSchema>;

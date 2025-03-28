@@ -7,10 +7,19 @@ import Dashboard from "@/pages/Dashboard";
 import { useState, useEffect } from "react";
 import NotificationSnackbar from "./components/NotificationSnackbar";
 
+// Import pages
+import Calendar from "@/pages/Calendar";
+import Reminders from "@/pages/Reminders";
+import FilterView from "@/pages/FilterView";
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
+      <Route path="/calendar" component={Calendar} />
+      <Route path="/reminders" component={Reminders} />
+      <Route path="/filter/:filterType" component={FilterView} />
+      <Route path="/category/:categoryId" component={FilterView} />
       <Route component={NotFound} />
     </Switch>
   );

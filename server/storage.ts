@@ -77,7 +77,11 @@ export class MemStorage implements IStorage {
 
   async createCategory(insertCategory: InsertCategory): Promise<Category> {
     const id = this.categoryIdCounter++;
-    const category: Category = { ...insertCategory, id };
+    const category: Category = { 
+      ...insertCategory, 
+      id,
+      userId: insertCategory.userId ?? null
+    };
     this.categories.set(id, category);
     return category;
   }
@@ -118,7 +122,22 @@ export class MemStorage implements IStorage {
 
   async createTask(insertTask: InsertTask): Promise<Task> {
     const id = this.taskIdCounter++;
-    const task: Task = { ...insertTask, id };
+    // Ensure all required fields have default values to satisfy TypeScript
+    const task: Task = { 
+      ...insertTask, 
+      id,
+      title: insertTask.title,
+      description: insertTask.description ?? null,
+      dueDate: insertTask.dueDate ?? null,
+      priority: insertTask.priority ?? "medium",
+      status: insertTask.status ?? "incomplete",
+      categoryId: insertTask.categoryId ?? null,
+      userId: insertTask.userId ?? null,
+      hasReminder: insertTask.hasReminder ?? false,
+      reminderTime: insertTask.reminderTime ?? null,
+      completed: insertTask.completed ?? false,
+      completedAt: insertTask.completedAt ?? null
+    };
     this.tasks.set(id, task);
     return task;
   }
@@ -157,7 +176,7 @@ export class MemStorage implements IStorage {
 
   async getCompletedTasks(): Promise<Task[]> {
     return Array.from(this.tasks.values()).filter(
-      (task) => task.status === "complete"
+      (task) => task.completed === true || task.status === "complete"
     );
   }
 }

@@ -61,6 +61,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: null, // We're not handling authentication in this demo
         hasReminder: validatedData.hasReminder,
         reminderTime: validatedData.reminderTime,
+        completed: validatedData.status === "complete",
+        completedAt: validatedData.status === "complete" ? new Date() : null,
       };
 
       const task = await storage.createTask(taskData);
@@ -103,9 +105,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      // Check for status change to complete
+      const isCompletionToggle = 
+        validatedData.status === "complete" && task.status !== "complete";
+      
       const taskData: any = {
         ...validatedData,
         dueDate,
+        // Set completed state based on status
+        completed: validatedData.status === "complete",
+        // Set completedAt date when a task is being marked as complete
+        completedAt: isCompletionToggle ? new Date() : task.completedAt
       };
       
       // Remove properties that shouldn't be sent to storage
