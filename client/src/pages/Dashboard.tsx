@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
+import { format, isSameDay as dateFnsisSameDay } from "date-fns";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -41,18 +41,69 @@ export default function Dashboard() {
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskFormValues | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Group tasks by date
-  const { today, tomorrow, later } = getTasksByDate();
+  const { today: todayTasks, tomorrow: tomorrowTasks, later: laterTasks } = getTasksByDate();
 
+  // Current date for display
+  const todayDate = new Date();
+  const tomorrowDate = new Date(todayDate);
+  tomorrowDate.setDate(todayDate.getDate() + 1);
+  const laterDate = new Date(todayDate);
+  laterDate.setDate(todayDate.getDate() + 3); // Later is 3+ days out
+  
   // Current date formatted nicely
-  const currentDate = format(new Date(), "EEEE, MMMM d, yyyy");
+  const currentDate = format(todayDate, "EEEE, MMMM d, yyyy");
+  
+  // Custom isSameDay function
+  const isSameDay = (date1: Date, date2: Date) => {
+    return dateFnsisSameDay(date1, date2);
+  };
+  
+  // Calendar dates setup
+  const getDayLabel = (date: Date) => {
+    return date.toLocaleDateString('en-US', { weekday: 'short' }).substring(0, 3);
+  };
+  
+  const formatDay = (date: Date) => {
+    return date.getDate();
+  };
+  
+  // Generate dates for calendar display
+  const calendarDates = Array.from({ length: 6 }, (_, i) => {
+    const date = new Date();
+    date.setDate(todayDate.getDate() + i - 1); // Start from yesterday
+    return {
+      date,
+      day: getDayLabel(date),
+      dayNum: formatDay(date),
+      isToday: isSameDay(date, todayDate)
+    };
+  });
+  
+  // Time slots for the timeline
+  const timeSlots = [
+    "8 am", "11 am", "12 pm", "2 pm", "4 pm", "8 pm", "11 pm"
+  ];
 
-  // Filter tasks based on search query
-  const filterTasks = (tasks: Task[]) => {
-    if (!searchQuery) return tasks;
+  // Filter tasks based on search query and date
+  const filterTasks = (tasks: Task[], date?: Date) => {
+    // First filter by date if provided
+    let filteredTasks = tasks;
     
-    return tasks.filter((task) => 
+    if (date) {
+      filteredTasks = tasks.filter(task => {
+        if (!task.dueDate) return false;
+        const taskDate = new Date(task.dueDate);
+        return isSameDay(taskDate, date);
+      });
+    }
+    
+    // Then filter by search query
+    if (!searchQuery) return filteredTasks;
+    
+    return filteredTasks.filter((task) => 
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
     );
@@ -273,6 +324,28 @@ export default function Dashboard() {
             </motion.div>
           </motion.div>
           
+          {/* Date Selector */}
+          <motion.div 
+            className="flex justify-center space-x-2 mb-6"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {calendarDates.map((calDate, index) => (
+              <motion.div 
+                key={index}
+                whileHover={{ scale: 1.05 }}
+                onClick={() => setSelectedDate(calDate.date)}
+                className={`date-pill cursor-pointer ${
+                  isSameDay(calDate.date, selectedDate) ? 'date-pill-active' : ''
+                }`}
+              >
+                <div className="text-xs">{calDate.day}</div>
+                <div className="text-base font-semibold">{calDate.dayNum}</div>
+              </motion.div>
+            ))}
+          </motion.div>
+          
           {/* Task List */}
           {isLoading ? (
             <div className="text-center py-12 glass-panel rounded-3xl">
@@ -292,9 +365,8 @@ export default function Dashboard() {
                 <div className="absolute bottom-10 left-10 w-32 h-32 rounded-full bg-blue-500 blur-3xl opacity-10"></div>
               </div>
               
-              <div className="mx-auto w-20 h-20 bg-gray-900 neon-border rounded-full flex items-center justify-center"
-                   style={{boxShadow: "0 0 15px rgba(139, 92, 246, 0.5)"}}>
-                <CheckCircle className="h-8 w-8 text-purple-400" />
+              <div className="mx-auto w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center border border-gray-800">
+                <CheckCircle className="h-8 w-8 text-gray-400" />
               </div>
               
               <h3 className="mt-6 text-xl font-medium text-white">No tasks yet</h3>
@@ -305,9 +377,8 @@ export default function Dashboard() {
                 className="mt-6 inline-block"
               >
                 <Button 
-                  className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 shadow-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 px-6"
+                  className="btn-primary"
                   onClick={() => setIsAddTaskModalOpen(true)}
-                  style={{boxShadow: "0 0 15px rgba(139, 92, 246, 0.5)"}}
                 >
                   <Plus className="h-5 w-5 mr-2" />
                   Add First Task
@@ -316,65 +387,75 @@ export default function Dashboard() {
             </motion.div>
           ) : (
             <motion.div 
-              className="space-y-8"
+              className="space-y-4"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
             >
-              {/* Today's tasks */}
-              {filterTasks(today).length > 0 && (
-                <div className="mb-10">
-                  <div className="flex items-center mb-6">
-                    <div className="w-3 h-10 bg-purple-500 rounded-r-full mr-3" 
-                         style={{boxShadow: "0 0 10px rgba(139, 92, 246, 0.7)"}}></div>
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">Today</h2>
-                  </div>
+              {/* Timeline View */}
+              <div className="glass-panel rounded-3xl p-6">
+                <h2 className="text-xl font-bold text-white mb-6">Your Schedule</h2>
+                
+                <div className="timeline-container">
+                  <div className="timeline-line"></div>
                   
-                  {filterTasks(today).map((task) => (
-                    <TaskCard 
-                      key={task.id}
-                      task={task}
-                      categories={categories}
-                      onToggleStatus={toggleTaskCompletion}
-                      onEdit={handleEditTask}
-                      onDelete={handleDeleteTask}
-                    />
+                  {timeSlots.map((time, index) => (
+                    <div key={index} className="mb-8">
+                      <div className="flex items-center mb-2">
+                        <div className={`timeline-dot ${
+                          index % 3 === 0 ? 'bg-pink-500' : 
+                          index % 3 === 1 ? 'bg-blue-500' : 'bg-purple-500'
+                        }`}></div>
+                        <span className="text-gray-400 text-sm ml-2">{time}</span>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-5">
+                        {filterTasks(tasks, selectedDate)
+                          .filter(task => {
+                            // This is a simplified logic - in a real app, you would match tasks with time slots
+                            const taskHour = task.dueDate ? new Date(task.dueDate).getHours() : 0;
+                            const slotHour = parseInt(time);
+                            // For pm times, add 12 hours unless it's 12pm
+                            const normalizedSlotHour = time.includes("pm") && !time.includes("12") 
+                              ? slotHour + 12 
+                              : slotHour;
+                            
+                            // Simple matching - place task in slot if hour is close
+                            return Math.abs(taskHour - normalizedSlotHour) <= 1;
+                          })
+                          .slice(0, 2) // Limit to 2 tasks per time slot for layout
+                          .map((task) => (
+                            <TaskCard 
+                              key={task.id}
+                              task={task}
+                              categories={categories}
+                              onToggleStatus={toggleTaskCompletion}
+                              onEdit={handleEditTask}
+                              onDelete={handleDeleteTask}
+                            />
+                          ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
-              )}
+              </div>
               
-              {/* Tomorrow's tasks */}
-              {filterTasks(tomorrow).length > 0 && (
+              {/* If no tasks exactly match timeline slots */}
+              {filterTasks(tasks, selectedDate).length > 0 && 
+               !filterTasks(tasks, selectedDate).some(task => {
+                 const taskHour = task.dueDate ? new Date(task.dueDate).getHours() : 0;
+                 return timeSlots.some(time => {
+                   const slotHour = parseInt(time);
+                   const normalizedSlotHour = time.includes("pm") && !time.includes("12") 
+                     ? slotHour + 12 
+                     : slotHour;
+                   return Math.abs(taskHour - normalizedSlotHour) <= 1;
+                 });
+               }) && (
                 <div className="mb-10">
-                  <div className="flex items-center mb-6">
-                    <div className="w-3 h-10 bg-blue-500 rounded-r-full mr-3" 
-                         style={{boxShadow: "0 0 10px rgba(59, 130, 246, 0.7)"}}></div>
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 text-transparent bg-clip-text">Tomorrow</h2>
-                  </div>
+                  <h3 className="text-lg font-medium text-white mb-4">Other Tasks</h3>
                   
-                  {filterTasks(tomorrow).map((task) => (
-                    <TaskCard 
-                      key={task.id}
-                      task={task}
-                      categories={categories}
-                      onToggleStatus={toggleTaskCompletion}
-                      onEdit={handleEditTask}
-                      onDelete={handleDeleteTask}
-                    />
-                  ))}
-                </div>
-              )}
-              
-              {/* Later tasks */}
-              {filterTasks(later).length > 0 && (
-                <div className="mb-10">
-                  <div className="flex items-center mb-6">
-                    <div className="w-3 h-10 bg-pink-500 rounded-r-full mr-3" 
-                         style={{boxShadow: "0 0 10px rgba(236, 72, 153, 0.7)"}}></div>
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-pink-400 to-orange-400 text-transparent bg-clip-text">Later</h2>
-                  </div>
-                  
-                  {filterTasks(later).map((task) => (
+                  {filterTasks(tasks, selectedDate).map((task) => (
                     <TaskCard 
                       key={task.id}
                       task={task}
@@ -389,9 +470,7 @@ export default function Dashboard() {
               
               {/* No results from search */}
               {searchQuery && 
-               filterTasks(today).length === 0 && 
-               filterTasks(tomorrow).length === 0 && 
-               filterTasks(later).length === 0 && (
+               filterTasks(tasks).length === 0 && (
                 <motion.div 
                   className="text-center py-12 glass-panel rounded-3xl"
                   initial={{opacity: 0}}
