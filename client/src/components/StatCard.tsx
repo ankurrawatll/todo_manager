@@ -18,40 +18,59 @@ export default function StatCard({
   iconColor,
   trend = "neutral",
 }: StatCardProps) {
+  // Get color based on title for the card glow
+  const getGlowColor = () => {
+    if (title.includes("Total")) return "rgba(139, 92, 246, 0.5)"; // purple
+    if (title.includes("Due")) return "rgba(245, 158, 11, 0.5)"; // amber
+    if (title.includes("Completed")) return "rgba(16, 185, 129, 0.5)"; // emerald
+    if (title.includes("High")) return "rgba(239, 68, 68, 0.5)"; // red
+    return "rgba(139, 92, 246, 0.5)"; // default purple
+  };
+
   return (
     <motion.div
-      className="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
+      className="glass-panel rounded-full neomorphic p-6 relative overflow-hidden"
+      style={{
+        boxShadow: `0 0 15px ${getGlowColor()}`
+      }}
       whileHover={{ 
         y: -5,
-        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" 
+        boxShadow: `0 0 25px ${getGlowColor()}`,
+        scale: 1.03
       }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.3 }}
     >
+      <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-opacity-10 blur-lg" 
+           style={{background: getGlowColor(), filter: "blur(25px)"}} />
+           
       <div className="flex items-center mb-4">
-        <div className={cn("p-2 rounded-lg", `bg-opacity-10 ${iconColor}`)}>
+        <div className={cn("p-3 rounded-full neon-border", `bg-opacity-20 ${iconColor}`)}
+          style={{boxShadow: `0 0 10px ${getGlowColor()}`}}>
           {icon}
         </div>
-        <h3 className="ml-2 text-lg font-semibold text-gray-700">{title}</h3>
+        <h3 className="ml-3 text-lg font-semibold text-white">{title}</h3>
       </div>
+      
       <motion.p 
-        className="text-3xl font-bold text-gray-900"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.1, duration: 0.3 }}
+        className="text-4xl font-bold text-white"
+        initial={{ scale: 0.8, opacity: 0, y: -10 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.5, type: "spring" }}
       >
         {value}
       </motion.p>
+      
       <div className="flex items-center mt-2 text-sm">
         {trend === "up" && (
-          <span className="material-icons text-green-500 text-sm">trending_up</span>
+          <span className="text-green-400 text-sm" style={{textShadow: "0 0 5px #10b981"}}>↑</span>
         )}
         {trend === "down" && (
-          <span className="material-icons text-red-500 text-sm">trending_down</span>
+          <span className="text-red-400 text-sm" style={{textShadow: "0 0 5px #ef4444"}}>↓</span>
         )}
         <span className={cn(
-          "ml-1",
-          trend === "up" ? "text-green-500" : 
-          trend === "down" ? "text-red-500" : "text-gray-500"
+          "ml-2",
+          trend === "up" ? "text-green-400" : 
+          trend === "down" ? "text-red-400" : "text-gray-400"
         )}>
           {subtitle}
         </span>

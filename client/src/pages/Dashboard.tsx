@@ -113,44 +113,69 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
+    <div className="min-h-screen flex flex-col md:flex-row bg-[#0f1118]">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       
       <MobileHeader onOpenSidebar={() => setIsSidebarOpen(true)} />
       
       <main className="flex-1 md:ml-64 p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <motion.div 
+            className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 glass-panel rounded-3xl p-6"
+            initial={{opacity: 0, y: -20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.4}}
+          >
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Today's Tasks</h1>
-              <p className="text-gray-600">{currentDate}</p>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">
+                Today's Tasks
+              </h1>
+              <p className="text-gray-400">{currentDate}</p>
             </div>
             
-            <div className="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <div className="mt-5 md:mt-0 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
               <div className="relative">
                 <Input
                   type="text"
                   placeholder="Search tasks..."
-                  className="pl-10 pr-4 py-2"
+                  className="pl-10 pr-4 py-2 bg-gray-900 bg-opacity-40 border-gray-800 text-white placeholder:text-gray-500 rounded-full focus:ring-purple-500 focus:border-purple-500"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-3 top-2.5 h-5 w-5 text-purple-400" />
               </div>
               
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="flex items-center">
-                  <FilterIcon className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
+              <div className="flex space-x-3">
+                <motion.div
+                  whileHover={{scale: 1.05}}
+                  className="inline-block"
+                >
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex items-center rounded-full bg-gray-900 bg-opacity-40 border-gray-800 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-purple-500 transition-all duration-300"
+                  >
+                    <FilterIcon className="h-4 w-4 mr-2 text-purple-400" />
+                    Filter
+                  </Button>
+                </motion.div>
                 
-                <Button variant="outline" size="sm" className="flex items-center">
-                  <SortDesc className="h-4 w-4 mr-2" />
-                  Sort
-                </Button>
+                <motion.div
+                  whileHover={{scale: 1.05}}
+                  className="inline-block"
+                >
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex items-center rounded-full bg-gray-900 bg-opacity-40 border-gray-800 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-blue-500 transition-all duration-300"
+                  >
+                    <SortDesc className="h-4 w-4 mr-2 text-blue-400" />
+                    Sort
+                  </Button>
+                </motion.div>
               </div>
             </div>
-          </div>
+          </motion.div>
           
           {/* Task summary cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -192,57 +217,119 @@ export default function Dashboard() {
           </div>
           
           {/* Task Categories */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            <Button className="category-pill shadow-sm">All Tasks</Button>
-            {categories.map((category) => (
+          <motion.div 
+            className="flex flex-wrap gap-3 glass-panel rounded-3xl p-3 mb-8"
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.4, delay: 0.2}}
+          >
+            <motion.div whileHover={{scale: 1.05}} className="m-1">
               <Button 
-                key={category.id} 
-                variant="outline" 
-                className="category-pill shadow-sm hover:bg-gray-50"
+                className="rounded-full bg-purple-700 bg-opacity-70 text-white border-0 shadow-lg hover:bg-purple-600 transition-all duration-300"
+                style={{boxShadow: "0 0 10px rgba(139, 92, 246, 0.5)"}}
               >
-                {category.name}
+                All Tasks
               </Button>
+            </motion.div>
+            
+            {categories.map((category) => (
+              <motion.div 
+                key={category.id} 
+                whileHover={{scale: 1.05}}
+                className="m-1"
+              >
+                <Button 
+                  variant="outline" 
+                  className="rounded-full glass-panel border-gray-800 text-gray-300 hover:text-white transition-all duration-300"
+                  style={{
+                    borderLeft: `3px solid ${category.color}`,
+                    boxShadow: `0 0 8px rgba(0, 0, 0, 0.3), 0 0 5px ${category.color}`
+                  }}
+                >
+                  <span 
+                    className="w-3 h-3 rounded-full mr-2" 
+                    style={{
+                      backgroundColor: category.color,
+                      boxShadow: `0 0 5px ${category.color}`
+                    }}
+                  />
+                  {category.name}
+                </Button>
+              </motion.div>
             ))}
-            <Button 
-              variant="outline" 
-              className="category-pill shadow-sm text-primary border-dashed border-primary"
+            
+            <motion.div 
+              whileHover={{scale: 1.05, rotate: 5}} 
+              className="m-1"
             >
-              <Plus className="h-4 w-4 mr-1" />
-              Add Category
-            </Button>
-          </div>
+              <Button 
+                variant="outline" 
+                className="rounded-full bg-gray-900 bg-opacity-40 text-purple-400 border-dashed border-purple-500 hover:bg-purple-900 hover:bg-opacity-30 transition-all duration-300"
+                style={{boxShadow: "0 0 10px rgba(139, 92, 246, 0.3)"}}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Category
+              </Button>
+            </motion.div>
+          </motion.div>
           
           {/* Task List */}
           {isLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-gray-500">Loading tasks...</p>
+            <div className="text-center py-12 glass-panel rounded-3xl">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto"
+                   style={{boxShadow: "0 0 15px rgba(139, 92, 246, 0.7)"}}></div>
+              <p className="mt-6 text-purple-300">Loading your tasks...</p>
             </div>
           ) : isTasksEmpty ? (
-            <div className="text-center py-12 bg-white rounded-xl shadow-sm">
-              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-8 w-8 text-gray-400" />
+            <motion.div 
+              className="text-center py-16 glass-panel rounded-3xl relative overflow-hidden"
+              initial={{opacity: 0, scale: 0.9}}
+              animate={{opacity: 1, scale: 1}}
+              transition={{duration: 0.5}}
+            >
+              <div className="absolute top-0 left-0 w-full h-full bg-opacity-5 pointer-events-none">
+                <div className="absolute top-10 right-10 w-32 h-32 rounded-full bg-purple-500 blur-3xl opacity-10"></div>
+                <div className="absolute bottom-10 left-10 w-32 h-32 rounded-full bg-blue-500 blur-3xl opacity-10"></div>
               </div>
-              <h3 className="mt-4 text-lg font-medium text-gray-900">No tasks yet</h3>
-              <p className="mt-2 text-gray-500">Get started by adding your first task</p>
-              <Button 
-                className="mt-4"
-                onClick={() => setIsAddTaskModalOpen(true)}
+              
+              <div className="mx-auto w-20 h-20 bg-gray-900 neon-border rounded-full flex items-center justify-center"
+                   style={{boxShadow: "0 0 15px rgba(139, 92, 246, 0.5)"}}>
+                <CheckCircle className="h-8 w-8 text-purple-400" />
+              </div>
+              
+              <h3 className="mt-6 text-xl font-medium text-white">No tasks yet</h3>
+              <p className="mt-3 text-gray-400 max-w-md mx-auto">Get started by adding your first task using the button below</p>
+              
+              <motion.div 
+                whileHover={{scale: 1.05}} 
+                className="mt-6 inline-block"
               >
-                Add Task
-              </Button>
-            </div>
+                <Button 
+                  className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 shadow-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 px-6"
+                  onClick={() => setIsAddTaskModalOpen(true)}
+                  style={{boxShadow: "0 0 15px rgba(139, 92, 246, 0.5)"}}
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Add First Task
+                </Button>
+              </motion.div>
+            </motion.div>
           ) : (
             <motion.div 
-              className="space-y-6"
+              className="space-y-8"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
             >
               {/* Today's tasks */}
               {filterTasks(today).length > 0 && (
-                <div className="mb-8">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Today</h2>
+                <div className="mb-10">
+                  <div className="flex items-center mb-6">
+                    <div className="w-3 h-10 bg-purple-500 rounded-r-full mr-3" 
+                         style={{boxShadow: "0 0 10px rgba(139, 92, 246, 0.7)"}}></div>
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">Today</h2>
+                  </div>
+                  
                   {filterTasks(today).map((task) => (
                     <TaskCard 
                       key={task.id}
@@ -258,8 +345,13 @@ export default function Dashboard() {
               
               {/* Tomorrow's tasks */}
               {filterTasks(tomorrow).length > 0 && (
-                <div className="mb-8">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Tomorrow</h2>
+                <div className="mb-10">
+                  <div className="flex items-center mb-6">
+                    <div className="w-3 h-10 bg-blue-500 rounded-r-full mr-3" 
+                         style={{boxShadow: "0 0 10px rgba(59, 130, 246, 0.7)"}}></div>
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 text-transparent bg-clip-text">Tomorrow</h2>
+                  </div>
+                  
                   {filterTasks(tomorrow).map((task) => (
                     <TaskCard 
                       key={task.id}
@@ -275,8 +367,13 @@ export default function Dashboard() {
               
               {/* Later tasks */}
               {filterTasks(later).length > 0 && (
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Later</h2>
+                <div className="mb-10">
+                  <div className="flex items-center mb-6">
+                    <div className="w-3 h-10 bg-pink-500 rounded-r-full mr-3" 
+                         style={{boxShadow: "0 0 10px rgba(236, 72, 153, 0.7)"}}></div>
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-pink-400 to-orange-400 text-transparent bg-clip-text">Later</h2>
+                  </div>
+                  
                   {filterTasks(later).map((task) => (
                     <TaskCard 
                       key={task.id}
@@ -295,20 +392,32 @@ export default function Dashboard() {
                filterTasks(today).length === 0 && 
                filterTasks(tomorrow).length === 0 && 
                filterTasks(later).length === 0 && (
-                <div className="text-center py-8">
-                  <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                    <Search className="h-8 w-8 text-gray-400" />
+                <motion.div 
+                  className="text-center py-12 glass-panel rounded-3xl"
+                  initial={{opacity: 0}}
+                  animate={{opacity: 1}}
+                  transition={{duration: 0.3}}
+                >
+                  <div className="mx-auto w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center neon-border">
+                    <Search className="h-8 w-8 text-purple-400" />
                   </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">No matching tasks</h3>
-                  <p className="mt-2 text-gray-500">Try adjusting your search criteria</p>
-                  <Button 
-                    variant="outline" 
-                    className="mt-4"
-                    onClick={() => setSearchQuery("")}
+                  <h3 className="mt-6 text-xl font-medium text-white">No matching tasks</h3>
+                  <p className="mt-3 text-gray-400">Try adjusting your search criteria</p>
+                  
+                  <motion.div 
+                    whileHover={{scale: 1.05}} 
+                    className="mt-6 inline-block"
                   >
-                    Clear Search
-                  </Button>
-                </div>
+                    <Button 
+                      variant="outline" 
+                      className="mt-4 rounded-full border-purple-500 text-purple-400 hover:bg-purple-900 hover:bg-opacity-30"
+                      onClick={() => setSearchQuery("")}
+                      style={{boxShadow: "0 0 10px rgba(139, 92, 246, 0.3)"}}
+                    >
+                      Clear Search
+                    </Button>
+                  </motion.div>
+                </motion.div>
               )}
             </motion.div>
           )}
@@ -316,16 +425,23 @@ export default function Dashboard() {
         
         {/* Floating Action Button */}
         <motion.button
-          className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full shadow-xl flex items-center justify-center focus:outline-none"
           onClick={() => {
             setEditingTask(undefined);
             setIsAddTaskModalOpen(true);
           }}
-          whileHover={{ scale: 1.1, rotate: 5 }}
+          whileHover={{ 
+            scale: 1.1, 
+            rotate: 15,
+            boxShadow: "0 0 25px rgba(139, 92, 246, 0.7)"
+          }}
           whileTap={{ scale: 0.95 }}
           transition={{ duration: 0.3, type: "spring" }}
+          style={{
+            boxShadow: "0 0 15px rgba(139, 92, 246, 0.5)"
+          }}
         >
-          <Plus className="h-6 w-6" />
+          <Plus className="h-8 w-8" />
         </motion.button>
       </main>
       
