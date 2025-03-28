@@ -29,7 +29,7 @@ export default function StatCard({
 
   return (
     <motion.div
-      className="glass-panel rounded-full neomorphic p-6 relative overflow-hidden"
+      className="glass-panel rounded-xl neomorphic p-6 relative overflow-hidden"
       style={{
         boxShadow: `0 0 15px ${getGlowColor()}`
       }}
@@ -40,11 +40,11 @@ export default function StatCard({
       }}
       transition={{ duration: 0.3 }}
     >
-      <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-opacity-10 blur-lg" 
+      <div className="absolute top-0 right-0 w-24 h-24 rounded-2xl bg-opacity-10 blur-lg" 
            style={{background: getGlowColor(), filter: "blur(25px)"}} />
            
       <div className="flex items-center mb-4">
-        <div className={cn("p-3 rounded-full neon-border", `bg-opacity-20 ${iconColor}`)}
+        <div className={cn("p-3 rounded-lg neon-border", `bg-opacity-20 ${iconColor}`)}
           style={{boxShadow: `0 0 10px ${getGlowColor()}`}}>
           {icon}
         </div>

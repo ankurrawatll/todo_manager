@@ -45,13 +45,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <h2 className="text-xs uppercase font-semibold text-purple-300 tracking-wider mb-3">Menu</h2>
           <ul className="space-y-3">
             <li className="hover-scale">
-              <Link href="/">
+              <Link href="/dashboard">
                 <div className={`flex items-center px-3 py-2.5 rounded-lg cursor-pointer ${
-                  location === "/" 
+                  location === "/dashboard" 
                     ? "neon-border text-white bg-opacity-20 bg-purple-900" 
                     : "text-gray-300 hover:text-white hover:bg-opacity-10 hover:bg-purple-800 transition-all duration-300"
                 }`}>
-                  <LayoutDashboard className={`mr-3 h-5 w-5 ${location === "/" ? "text-purple-400" : "text-gray-400"}`} />
+                  <LayoutDashboard className={`mr-3 h-5 w-5 ${location === "/dashboard" ? "text-purple-400" : "text-gray-400"}`} />
                   <span>Dashboard</span>
                 </div>
               </Link>
