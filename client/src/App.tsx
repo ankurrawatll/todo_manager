@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -6,16 +6,21 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import { useState, useEffect } from "react";
 import NotificationSnackbar from "./components/NotificationSnackbar";
+import AIAssistant from "./components/AIAssistant";
 
 // Import pages
 import Calendar from "@/pages/Calendar";
 import Reminders from "@/pages/Reminders";
 import FilterView from "@/pages/FilterView";
+import Intro from "@/pages/Intro";
+import Login from "@/pages/Login";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
+      <Route path="/intro" component={Intro} />
+      <Route path="/login" component={Login} />
       <Route path="/calendar" component={Calendar} />
       <Route path="/reminders" component={Reminders} />
       <Route path="/filter/:filterType" component={FilterView} />
@@ -24,6 +29,17 @@ function Router() {
     </Switch>
   );
 }
+
+// Redirect component for initial app load - uncomment this to make Intro the default page
+// function InitialRedirect() {
+//   const [_, navigate] = useLocation();
+//   useEffect(() => {
+//     if (window.location.pathname === '/') {
+//       navigate('/intro');
+//     }
+//   }, [navigate]);
+//   return null;
+// }
 
 function App() {
   const [notification, setNotification] = useState<{
@@ -69,6 +85,11 @@ function App() {
     (window as any).showTaskNotification = showNotification;
   }, []);
 
+  // Check if we're on intro or login page
+  const isAuthRoute = () => {
+    return window.location.pathname === '/intro' || window.location.pathname === '/login';
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <Router />
@@ -79,6 +100,7 @@ function App() {
         visible={notification.visible}
         onDismiss={dismissNotification}
       />
+      {!isAuthRoute() && <AIAssistant />}
     </QueryClientProvider>
   );
 }
