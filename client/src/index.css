@@ -8,6 +8,133 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased;
+    background-color: #0f1118;
+    color: #e6e6f0;
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(circle at 25% 15%, rgba(81, 62, 139, 0.15) 0%, transparent 35%),
+      radial-gradient(circle at 75% 85%, rgba(114, 51, 201, 0.1) 0%, transparent 40%);
+  }
+
+  :root {
+    --neon-purple: #b026ff;
+    --neon-blue: #4d4dff;
+    --neon-pink: #ff26b0;
+    --glass-bg: rgba(26, 27, 38, 0.60);
+    --glass-border: rgba(149, 132, 255, 0.05);
+    --neomorphic-bg: #161825;
+    --neomorphic-shadow-dark: #0c0d16;
+    --neomorphic-shadow-light: #202334;
+  }
+}
+
+@layer components {
+  /* Glassmorphism styles */
+  .glass-panel {
+    @apply backdrop-blur-md bg-opacity-20 border border-opacity-20 rounded-lg;
+    background-color: var(--glass-bg);
+    border-color: var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(10, 10, 30, 0.37);
+  }
+  
+  /* Neomorphism styles */
+  .neomorphic {
+    background: var(--neomorphic-bg);
+    box-shadow: 5px 5px 10px var(--neomorphic-shadow-dark),
+                -5px -5px 10px var(--neomorphic-shadow-light);
+    @apply rounded-lg border-0;
+  }
+  
+  .neomorphic-inset {
+    background: var(--neomorphic-bg);
+    box-shadow: inset 5px 5px 10px var(--neomorphic-shadow-dark),
+                inset -5px -5px 10px var(--neomorphic-shadow-light);
+    @apply rounded-lg border-0;
+  }
+  
+  /* Neon effects */
+  .neon-text {
+    @apply font-semibold;
+    text-shadow: 0 0 5px rgba(176, 38, 255, 0.7), 
+                 0 0 10px rgba(176, 38, 255, 0.5),
+                 0 0 20px rgba(176, 38, 255, 0.3);
+  }
+  
+  .neon-border {
+    @apply border rounded-lg relative;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 5px var(--neon-purple),
+                inset 0 0 5px var(--neon-purple);
+  }
+  
+  .neon-blue-border {
+    @apply border rounded-lg relative;
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 5px var(--neon-blue),
+                inset 0 0 5px var(--neon-blue);
+  }
+  
+  .neon-pink-border {
+    @apply border rounded-lg relative;
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 5px var(--neon-pink),
+                inset 0 0 5px var(--neon-pink);
+  }
+
+  /* Task card specific styles */
+  .neomorphic-card {
+    background: var(--neomorphic-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 5px 5px 10px var(--neomorphic-shadow-dark),
+                -2px -2px 8px var(--neomorphic-shadow-light);
+  }
+  
+  .glass-badge {
+    background: rgba(30, 30, 50, 0.3);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .glass-dropdown {
+    background: rgba(20, 20, 30, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+  }
+  
+  .neon-green-shadow {
+    box-shadow: 0 0 8px rgba(22, 163, 74, 0.8);
+  }
+
+  /* Hover animations */
+  .hover-scale {
+    @apply transition-transform duration-300;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.03);
+  }
+  
+  /* Gradient backgrounds */
+  .gradient-bg {
+    background: linear-gradient(135deg, #2a1f5c 0%, #1a134d 100%);
+  }
+  
+  /* Pulse animation for notification badges */
+  @keyframes pulse-animation {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 82, 183, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(255, 82, 183, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 82, 183, 0);
+    }
+  }
+  
+  .notification-badge {
+    animation: pulse-animation 2s infinite;
   }
 }
