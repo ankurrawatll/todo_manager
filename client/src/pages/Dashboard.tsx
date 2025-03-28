@@ -198,13 +198,13 @@ export default function Dashboard() {
               
               <div className="flex space-x-3">
                 <motion.div
-                  whileHover={{scale: 1.05}}
                   className="inline-block"
                 >
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="flex items-center rounded-full bg-gray-900 bg-opacity-40 border-gray-800 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-purple-500 transition-all duration-300"
+                    className="flex items-center rounded-full bg-gray-900 bg-opacity-40 border-gray-800 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-purple-500 transition-all duration-300 filter-button"
+                    style={{ "--glow-color": "rgba(139, 92, 246, 0.6)" } as React.CSSProperties}
                   >
                     <FilterIcon className="h-4 w-4 mr-2 text-purple-400" />
                     Filter
@@ -212,13 +212,13 @@ export default function Dashboard() {
                 </motion.div>
                 
                 <motion.div
-                  whileHover={{scale: 1.05}}
                   className="inline-block"
                 >
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="flex items-center rounded-full bg-gray-900 bg-opacity-40 border-gray-800 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-blue-500 transition-all duration-300"
+                    className="flex items-center rounded-full bg-gray-900 bg-opacity-40 border-gray-800 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-blue-500 transition-all duration-300 filter-button"
+                    style={{ "--glow-color": "rgba(59, 130, 246, 0.6)" } as React.CSSProperties}
                   >
                     <SortDesc className="h-4 w-4 mr-2 text-blue-400" />
                     Sort
@@ -274,10 +274,13 @@ export default function Dashboard() {
             animate={{opacity: 1, y: 0}}
             transition={{duration: 0.4, delay: 0.2}}
           >
-            <motion.div whileHover={{scale: 1.05}} className="m-1">
+            <motion.div className="m-1">
               <Button 
-                className="rounded-full bg-purple-700 bg-opacity-70 text-white border-0 shadow-lg hover:bg-purple-600 transition-all duration-300"
-                style={{boxShadow: "0 0 10px rgba(139, 92, 246, 0.5)"}}
+                className="rounded-full bg-purple-700 bg-opacity-70 text-white border-0 shadow-lg hover:bg-purple-600 transition-all duration-300 category-item"
+                style={{
+                  boxShadow: "0 0 10px rgba(139, 92, 246, 0.5)",
+                  "--glow-color": "rgba(139, 92, 246, 0.7)"
+                } as React.CSSProperties}
               >
                 All Tasks
               </Button>
@@ -286,22 +289,24 @@ export default function Dashboard() {
             {categories.map((category) => (
               <motion.div 
                 key={category.id} 
-                whileHover={{scale: 1.05}}
                 className="m-1"
               >
                 <Button 
                   variant="outline" 
-                  className="rounded-full glass-panel border-gray-800 text-gray-300 hover:text-white transition-all duration-300"
+                  className="rounded-full glass-panel border-gray-800 text-gray-300 hover:text-white transition-all duration-300 category-item"
                   style={{
                     borderLeft: `3px solid ${category.color}`,
-                    boxShadow: `0 0 8px rgba(0, 0, 0, 0.3), 0 0 5px ${category.color}`
-                  }}
+                    boxShadow: `0 0 8px rgba(0, 0, 0, 0.3), 0 0 5px ${category.color}`,
+                    "--glow-color": `${category.color}88`
+                  } as React.CSSProperties}
                 >
                   <span 
-                    className="w-3 h-3 rounded-full mr-2" 
+                    className="w-3 h-3 rounded-full mr-2 circular-element" 
                     style={{
                       backgroundColor: category.color,
-                      boxShadow: `0 0 5px ${category.color}`
+                      boxShadow: `0 0 5px ${category.color}`,
+                      margin: "0 8px 0 0",
+                      padding: "0"
                     }}
                   />
                   {category.name}
@@ -310,13 +315,15 @@ export default function Dashboard() {
             ))}
             
             <motion.div 
-              whileHover={{scale: 1.05, rotate: 5}} 
               className="m-1"
             >
               <Button 
                 variant="outline" 
-                className="rounded-full bg-gray-900 bg-opacity-40 text-purple-400 border-dashed border-purple-500 hover:bg-purple-900 hover:bg-opacity-30 transition-all duration-300"
-                style={{boxShadow: "0 0 10px rgba(139, 92, 246, 0.3)"}}
+                className="rounded-full bg-gray-900 bg-opacity-40 text-purple-400 border-dashed border-purple-500 hover:bg-purple-900 hover:bg-opacity-30 transition-all duration-300 category-item"
+                style={{
+                  boxShadow: "0 0 10px rgba(139, 92, 246, 0.3)",
+                  "--glow-color": "rgba(139, 92, 246, 0.6)"
+                } as React.CSSProperties}
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Add Category
@@ -365,7 +372,8 @@ export default function Dashboard() {
                 <div className="absolute bottom-10 left-10 w-32 h-32 rounded-full bg-blue-500 blur-3xl opacity-10"></div>
               </div>
               
-              <div className="mx-auto w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center border border-gray-800">
+              <div className="mx-auto w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center circular-icon"
+                   style={{ "--glow-color": "rgba(139, 92, 246, 0.4)" } as React.CSSProperties}>
                 <CheckCircle className="h-8 w-8 text-gray-400" />
               </div>
               
@@ -402,10 +410,19 @@ export default function Dashboard() {
                   {timeSlots.map((time, index) => (
                     <div key={index} className="mb-8">
                       <div className="flex items-center mb-2">
-                        <div className={`timeline-dot ${
-                          index % 3 === 0 ? 'bg-pink-500' : 
-                          index % 3 === 1 ? 'bg-blue-500' : 'bg-purple-500'
-                        }`}></div>
+                        <div 
+                          className={`timeline-dot ${
+                            index % 3 === 0 ? 'bg-pink-500' : 
+                            index % 3 === 1 ? 'bg-blue-500' : 'bg-purple-500'
+                          }`}
+                          style={{ 
+                            "--dot-color": index % 3 === 0 
+                              ? "rgba(236, 72, 153, 0.7)" 
+                              : index % 3 === 1 
+                                ? "rgba(59, 130, 246, 0.7)" 
+                                : "rgba(139, 92, 246, 0.7)" 
+                          } as React.CSSProperties}
+                        ></div>
                         <span className="text-gray-400 text-sm ml-2">{time}</span>
                       </div>
                       
@@ -477,7 +494,8 @@ export default function Dashboard() {
                   animate={{opacity: 1}}
                   transition={{duration: 0.3}}
                 >
-                  <div className="mx-auto w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center neon-border">
+                  <div className="mx-auto w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center circular-icon" 
+                       style={{ "--glow-color": "rgba(139, 92, 246, 0.7)" } as React.CSSProperties}>
                     <Search className="h-8 w-8 text-purple-400" />
                   </div>
                   <h3 className="mt-6 text-xl font-medium text-white">No matching tasks</h3>

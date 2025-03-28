@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,11 +51,11 @@ export default function AddTaskModal({
   });
   
   // When the editTask changes, reset the form
-  useState(() => {
+  useEffect(() => {
     if (editTask) {
       form.reset(editTask);
     }
-  });
+  }, [editTask, form]);
 
   // Handle form submission
   const handleSubmit = (data: TaskFormValues) => {
