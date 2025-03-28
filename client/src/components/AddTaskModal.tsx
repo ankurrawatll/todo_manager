@@ -70,6 +70,9 @@ export default function AddTaskModal({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{editTask ? "Edit Task" : "Add New Task"}</DialogTitle>
+          <p className="text-sm text-gray-400 mt-2">
+            {editTask ? "Update your task details below" : "Fill out the form below to create a new task"}
+          </p>
         </DialogHeader>
         
         <Form {...form}>
@@ -178,8 +181,8 @@ export default function AddTaskModal({
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <Select 
-                      onValueChange={(value) => field.onChange(value ? parseInt(value) : null)} 
-                      value={field.value?.toString() || ""}
+                      onValueChange={(value) => field.onChange(value === "none" ? null : parseInt(value))} 
+                      value={field.value?.toString() || "none"}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -187,7 +190,7 @@ export default function AddTaskModal({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         {categories.map((category) => (
                           <SelectItem key={category.id} value={category.id.toString()}>
                             <div className="flex items-center">
@@ -214,7 +217,7 @@ export default function AddTaskModal({
                     <FormLabel>Priority</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>

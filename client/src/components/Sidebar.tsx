@@ -46,31 +46,31 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <ul className="space-y-3">
             <li className="hover-scale">
               <Link href="/">
-                <a className={`flex items-center px-3 py-2.5 rounded-lg ${
+                <div className={`flex items-center px-3 py-2.5 rounded-lg cursor-pointer ${
                   location === "/" 
                     ? "neon-border text-white bg-opacity-20 bg-purple-900" 
                     : "text-gray-300 hover:text-white hover:bg-opacity-10 hover:bg-purple-800 transition-all duration-300"
                 }`}>
                   <LayoutDashboard className={`mr-3 h-5 w-5 ${location === "/" ? "text-purple-400" : "text-gray-400"}`} />
                   <span>Dashboard</span>
-                </a>
+                </div>
               </Link>
             </li>
             <li className="hover-scale">
               <Link href="/calendar">
-                <a className={`flex items-center px-3 py-2.5 rounded-lg ${
+                <div className={`flex items-center px-3 py-2.5 rounded-lg cursor-pointer ${
                   location === "/calendar" 
                     ? "neon-blue-border text-white bg-opacity-20 bg-blue-900" 
                     : "text-gray-300 hover:text-white hover:bg-opacity-10 hover:bg-blue-800 transition-all duration-300"
                 }`}>
                   <Calendar className={`mr-3 h-5 w-5 ${location === "/calendar" ? "text-blue-400" : "text-gray-400"}`} />
                   <span>Calendar</span>
-                </a>
+                </div>
               </Link>
             </li>
             <li className="hover-scale">
               <Link href="/reminders">
-                <a className={`flex items-center px-3 py-2.5 rounded-lg ${
+                <div className={`flex items-center px-3 py-2.5 rounded-lg cursor-pointer ${
                   location === "/reminders" 
                     ? "neon-pink-border text-white bg-opacity-20 bg-pink-900" 
                     : "text-gray-300 hover:text-white hover:bg-opacity-10 hover:bg-pink-800 transition-all duration-300"
@@ -82,7 +82,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       {stats.dueToday}
                     </span>
                   )}
-                </a>
+                </div>
               </Link>
             </li>
           </ul>
@@ -99,7 +99,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             {categories.map((category) => (
               <li key={category.id} className="hover-scale">
                 <Link href={`/category/${category.id}`}>
-                  <a className="flex items-center px-3 py-2 text-gray-300 rounded-lg neomorphic transition-all duration-300 hover:text-white">
+                  <div className="flex items-center px-3 py-2 text-gray-300 rounded-lg neomorphic transition-all duration-300 hover:text-white cursor-pointer">
                     <span 
                       className="w-3 h-3 rounded-full mr-3" 
                       style={{ 
@@ -111,7 +111,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <span className="ml-auto text-gray-400 text-sm">
                       {/* Count could be added here */}
                     </span>
-                  </a>
+                  </div>
                 </Link>
               </li>
             ))}
@@ -123,26 +123,26 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <ul className="space-y-2">
             <li className="hover-scale">
               <Link href="/filter/high-priority">
-                <a className="flex items-center px-3 py-2 text-gray-300 rounded-lg neomorphic hover:text-white transition-all duration-300">
+                <div className="flex items-center px-3 py-2 text-gray-300 rounded-lg neomorphic hover:text-white transition-all duration-300 cursor-pointer">
                   <span className="w-3 h-3 rounded-full bg-red-500 mr-3" style={{boxShadow: '0 0 5px #ef4444'}}></span>
                   <span>High Priority</span>
-                </a>
+                </div>
               </Link>
             </li>
             <li className="hover-scale">
               <Link href="/filter/today">
-                <a className="flex items-center px-3 py-2 text-gray-300 rounded-lg neomorphic hover:text-white transition-all duration-300">
+                <div className="flex items-center px-3 py-2 text-gray-300 rounded-lg neomorphic hover:text-white transition-all duration-300 cursor-pointer">
                   <span className="mr-3 text-blue-400 text-sm" style={{textShadow: '0 0 3px #60a5fa'}}>●</span>
                   <span>Today</span>
-                </a>
+                </div>
               </Link>
             </li>
             <li className="hover-scale">
               <Link href="/filter/completed">
-                <a className="flex items-center px-3 py-2 text-gray-300 rounded-lg neomorphic hover:text-white transition-all duration-300">
+                <div className="flex items-center px-3 py-2 text-gray-300 rounded-lg neomorphic hover:text-white transition-all duration-300 cursor-pointer">
                   <span className="mr-3 text-green-400 text-sm" style={{textShadow: '0 0 3px #4ade80'}}>✓</span>
                   <span>Completed</span>
-                </a>
+                </div>
               </Link>
             </li>
           </ul>

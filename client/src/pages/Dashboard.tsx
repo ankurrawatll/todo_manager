@@ -133,10 +133,27 @@ export default function Dashboard() {
       dueTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
     }
 
+    // Ensure priority is properly typed
+    const priority = (task.priority === 'high' || task.priority === 'medium' || task.priority === 'low') 
+      ? task.priority 
+      : 'medium';
+    
+    // Ensure status is properly typed
+    const status = (task.status === 'complete' || task.status === 'incomplete') 
+      ? task.status 
+      : 'incomplete';
+
     setEditingTask({
-      ...task,
+      id: task.id,
+      title: task.title,
+      description: task.description || '',
       dueDate,
-      dueTime
+      dueTime,
+      categoryId: task.categoryId,
+      priority,
+      status,
+      hasReminder: task.hasReminder || false,
+      reminderTime: task.reminderTime || 30
     });
     setIsAddTaskModalOpen(true);
   };
