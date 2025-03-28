@@ -20,8 +20,8 @@ export default function FilterView() {
   const filterType = params?.filterType;
   const categoryId = categoryParams?.categoryId ? parseInt(categoryParams.categoryId) : undefined;
   
-  const { data: tasks = [] } = useTasks();
-  const { data: categories = [] } = useCategories();
+  const { tasks } = useTasks();
+  const { categories } = useCategories();
 
   // Get the current category if we're filtering by category
   const currentCategory = categoryId 

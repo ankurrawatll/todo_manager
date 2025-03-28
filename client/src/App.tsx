@@ -18,7 +18,8 @@ import Login from "@/pages/Login";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
+      <Route path="/" component={Intro} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route path="/intro" component={Intro} />
       <Route path="/login" component={Login} />
       <Route path="/calendar" component={Calendar} />
@@ -29,17 +30,6 @@ function Router() {
     </Switch>
   );
 }
-
-// Redirect component for initial app load - uncomment this to make Intro the default page
-// function InitialRedirect() {
-//   const [_, navigate] = useLocation();
-//   useEffect(() => {
-//     if (window.location.pathname === '/') {
-//       navigate('/intro');
-//     }
-//   }, [navigate]);
-//   return null;
-// }
 
 function App() {
   const [notification, setNotification] = useState<{
@@ -87,7 +77,7 @@ function App() {
 
   // Check if we're on intro or login page
   const isAuthRoute = () => {
-    return window.location.pathname === '/intro' || window.location.pathname === '/login';
+    return window.location.pathname === '/' || window.location.pathname === '/intro' || window.location.pathname === '/login';
   };
 
   return (

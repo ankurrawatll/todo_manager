@@ -25,7 +25,7 @@ export default function Dashboard() {
   const {
     tasks,
     isLoading,
-    stats,
+    stats = { totalTasks: 0, dueToday: 0, completed: 0, highPriority: 0 },
     createTask,
     updateTask,
     deleteTask,

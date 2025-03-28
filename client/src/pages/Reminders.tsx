@@ -10,8 +10,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recha
 import { format, isToday, addDays, isTomorrow, isThisWeek, isAfter } from "date-fns";
 
 export default function Reminders() {
-  const { data: tasks = [] } = useTasks();
-  const { data: categories = [] } = useCategories();
+  const { tasks } = useTasks();
+  const { categories } = useCategories();
   const [activeTab, setActiveTab] = useState("today");
 
   // Filter tasks for different time periods

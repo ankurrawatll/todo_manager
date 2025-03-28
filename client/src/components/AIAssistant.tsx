@@ -82,7 +82,7 @@ export default function AIAssistant() {
   return (
     <>
       {/* Floating button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-24 right-6 z-50">
         <motion.button
           className={`rounded-full p-3.5 flex items-center justify-center ${
             isOpen

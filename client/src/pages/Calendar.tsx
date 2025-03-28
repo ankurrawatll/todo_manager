@@ -13,8 +13,8 @@ import { Separator } from "@/components/ui/separator";
 export default function CalendarPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [month, setMonth] = useState<Date>(new Date());
-  const { data: tasks = [] } = useTasks();
-  const { data: categories = [] } = useCategories();
+  const { tasks } = useTasks();
+  const { categories } = useCategories();
 
   // Get tasks for selected date
   const tasksForSelectedDate = tasks.filter(
@@ -122,7 +122,9 @@ export default function CalendarPage() {
               DayContent: (props) => {
                 const dayStr = props.date.toISOString().split('T')[0];
                 const tasksOnDay = tasks.filter(task => {
-                  return task.dueDate?.split('T')[0] === dayStr;
+                  if (!task.dueDate) return false;
+                  const taskDate = new Date(task.dueDate);
+                  return taskDate.toISOString().split('T')[0] === dayStr;
                 });
                 
                 return (

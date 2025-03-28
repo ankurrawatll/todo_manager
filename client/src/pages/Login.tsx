@@ -15,7 +15,7 @@ export default function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // For now, just navigate to dashboard without authentication
-    navigate("/");
+    navigate("/dashboard");
   };
 
   const toggleView = () => {
