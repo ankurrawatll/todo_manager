@@ -15,6 +15,10 @@ import FilterView from "@/pages/FilterView";
 import Intro from "@/pages/Intro";
 import Login from "@/pages/Login";
 
+// Import new components as pages
+import Leaderboard from "./components/Leaderboard";
+import GoalPlanner from "./components/GoalPlanner";
+
 function Router() {
   return (
     <Switch>
@@ -24,6 +28,8 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/calendar" component={Calendar} />
       <Route path="/reminders" component={Reminders} />
+      <Route path="/leaderboard" component={Leaderboard} />
+      <Route path="/goals" component={GoalPlanner} />
       <Route path="/filter/:filterType" component={FilterView} />
       <Route path="/category/:categoryId" component={FilterView} />
       <Route component={NotFound} />

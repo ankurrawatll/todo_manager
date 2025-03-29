@@ -6,7 +6,10 @@ import {
   Calendar, 
   Bell, 
   Settings, 
-  AlertCircle
+  AlertCircle,
+  Trophy,
+  Target,
+  Brain
 } from "lucide-react";
 import { useTasks } from "@/hooks/use-tasks";
 import { useCategories } from "@/hooks/use-tasks";
@@ -82,6 +85,30 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       {stats.dueToday}
                     </span>
                   )}
+                </div>
+              </Link>
+            </li>
+            <li className="hover-scale">
+              <Link href="/goals">
+                <div className={`flex items-center px-3 py-2.5 rounded-lg cursor-pointer ${
+                  location === "/goals" 
+                    ? "neon-green-border text-white bg-opacity-20 bg-emerald-900" 
+                    : "text-gray-300 hover:text-white hover:bg-opacity-10 hover:bg-emerald-800 transition-all duration-300"
+                }`}>
+                  <Brain className={`mr-3 h-5 w-5 ${location === "/goals" ? "text-emerald-400" : "text-gray-400"}`} />
+                  <span>Goal Planner</span>
+                </div>
+              </Link>
+            </li>
+            <li className="hover-scale">
+              <Link href="/leaderboard">
+                <div className={`flex items-center px-3 py-2.5 rounded-lg cursor-pointer ${
+                  location === "/leaderboard" 
+                    ? "neon-yellow-border text-white bg-opacity-20 bg-amber-900" 
+                    : "text-gray-300 hover:text-white hover:bg-opacity-10 hover:bg-amber-800 transition-all duration-300"
+                }`}>
+                  <Trophy className={`mr-3 h-5 w-5 ${location === "/leaderboard" ? "text-amber-400" : "text-gray-400"}`} />
+                  <span>Leaderboard</span>
                 </div>
               </Link>
             </li>
