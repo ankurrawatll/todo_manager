@@ -6,7 +6,7 @@ import { insertTaskSchema, taskSchema, goalSchema, type Goal } from "@shared/sch
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { openAIService } from "./services/openai";
+import { geminiService } from "./services/gemini";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all tasks
@@ -517,7 +517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // === AI ENDPOINTS ===
   
-  // Generate goal roadmap with OpenAI
+  // Generate goal roadmap with Gemini AI
   app.post("/api/ai/generate-roadmap", async (req: Request, res: Response) => {
     try {
       const schema = z.object({
@@ -529,7 +529,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { goal, timeframe, details, category } = schema.parse(req.body);
       
-      // Create goal object for OpenAI service
+      // Create goal object for Gemini service
       const goalData = {
         title: goal,
         description: details || "",
@@ -537,83 +537,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timeframe: timeframe
       };
       
-      // Use our OpenAI service to generate the roadmap
-      const roadmap = await openAIService.generateGoalRoadmap(goalData);
-      
-      // If no OPENAI_API_KEY is provided, fallback to the legacy Gemini implementation
-      if (!process.env.OPENAI_API_KEY && roadmap instanceof Error) {
-        // Initialize the Gemini AI client
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "AIzaSyDSlSvLQyeqTmW-PQaxil06UzNN-IYU_NM");
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        
-        // Prepare prompt for AI
-        let prompt = `
-        Create a detailed, structured roadmap for the following goal: "${goal}".
-        Timeframe: ${timeframe} (${
-          timeframe === "short-term" ? "1-3 months" :
-          timeframe === "medium-term" ? "3-12 months" : "1-5 years"
-        }).
-        
-        ${details ? `Additional details: ${details}` : ""}
-        
-        Respond with a JSON object containing a structured roadmap with the following format:
-        {
-          "summary": "Brief summary of the approach",
-          "milestones": [
-            {
-              "title": "Milestone title",
-              "description": "Description",
-              "timeframe": "When this should be accomplished",
-              "tasks": [
-                {
-                  "title": "Task title",
-                  "description": "Task description",
-                  "priority": "high/medium/low",
-                  "estimatedDuration": "Time needed"
-                }
-              ]
-            }
-          ],
-          "weeklyPlan": [
-            {
-              "week": "1",
-              "focus": "What to focus on",
-              "tasks": ["Task 1", "Task 2", "Task 3"]
-            }
-          ],
-          "resources": ["Resource 1", "Resource 2"],
-          "challenges": ["Challenge 1", "Challenge 2"],
-          "tips": ["Tip 1", "Tip 2"]
-        }
-        
-        Only provide the JSON response with no additional text.
-        Ensure all milestones and tasks are practical, actionable, and aligned with the goal.
-        `;
-        
-        // Generate roadmap from Gemini AI
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-        
-        // Parse the response and extract JSON
-        let geminiRoadmap;
-        try {
-          // Find JSON content in the response
-          const jsonMatch = text.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            geminiRoadmap = JSON.parse(jsonMatch[0]);
-            return res.json(geminiRoadmap);
-          } else {
-            // Fallback if no JSON structure is found
-            throw new Error("Invalid AI response format");
-          }
-        } catch (err) {
-          return res.status(500).json({ 
-            message: "Failed to parse AI response",
-            error: err.message
-          });
-        }
-      }
+      // Use our Gemini service to generate the roadmap
+      const roadmap = await geminiService.generateGoalRoadmap(goalData);
       
       res.json({
         goal,
@@ -627,7 +552,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.status(500).json({ 
         message: "Failed to generate roadmap",
-        error: error.message
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+  
+  // Get productivity tips based on user stats
+  app.get("/api/ai/productivity-tips", async (req: Request, res: Response) => {
+    try {
+      // Get user stats
+      const allTasks = await storage.getAllTasks();
+      const completedTasks = await storage.getCompletedTasks();
+      const dueTodayTasks = await storage.getTasksDueToday();
+      const highPriorityTasks = await storage.getHighPriorityTasks();
+      
+      // Optionally get user's goals if a userId is provided
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : 1;
+      const goals = userId ? await storage.getGoalsByUser(userId) : [];
+      
+      // Generate tips based on stats
+      const tips = await geminiService.generateProductivityTips({
+        recentTasks: allTasks.length,
+        completedTasks: completedTasks.length,
+        overdueCount: dueTodayTasks.filter(t => !t.completed && new Date(t.dueDate || "") < new Date()).length,
+        highPriorityCount: highPriorityTasks.length,
+        goals
+      });
+      
+      res.json({ tips });
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to generate productivity tips",
+        error: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });

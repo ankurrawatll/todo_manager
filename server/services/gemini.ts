@@ -1,10 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Goal, InsertGoal } from "../../shared/schema";
 
-// Initialize Gemini client
-const geminiAI = new GoogleGenerativeAI("AIzaSyDjVjlcUgWCRcpKBNU7rdTAhFTFl9pBPQs"); // Using public demo API key
+// Initialize Gemini client with API key from environment variables
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "AIzaSyDSlSvLQyeqTmW-PQaxil06UzNN-IYU_NM");
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-export class OpenAIService {
+export class GeminiService {
   /**
    * Generate a task roadmap for a user's goal
    * @param goal The goal information provided by the user
@@ -12,19 +13,19 @@ export class OpenAIService {
    */
   async generateGoalRoadmap(goal: Partial<InsertGoal>): Promise<any> {
     try {
-      // Get Gemini pro model
-      const model = geminiAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
       // Construct the prompt for generating a roadmap based on the goal
       const prompt = `
         Generate a detailed, structured roadmap for the following goal:
         
         Goal Title: ${goal.title}
         Description: ${goal.description || "Not provided"}
-        Category: ${goal.category || "personal"}
-        Timeframe: ${goal.timeframe}
+        Category: ${goal.category}
+        Timeframe: ${goal.timeframe} (${
+          goal.timeframe === "short-term" ? "1-3 months" :
+          goal.timeframe === "medium-term" ? "3-12 months" : "1-5 years"
+        })
         
-        Create a structured JSON roadmap with the following format:
+        Respond with a JSON object containing a structured roadmap with the following format:
         {
           "overview": "Brief 2-3 sentence summary of the roadmap approach",
           "milestones": [
@@ -65,39 +66,33 @@ export class OpenAIService {
         Break down large goals into manageable steps.
         Include specific, measurable actions.
         Tailor the weekly and monthly plans to the goal's category.
-        IMPORTANT: Your response must be valid JSON. Do not include any explanations, markdown formatting, or text outside the JSON object.
+        Only provide the JSON response with no additional text.
       `;
 
-      // Generate roadmap content
+      // Call Gemini API to generate the roadmap
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
       
-      // Extract JSON from response (in case there's any text before or after the JSON)
-      const jsonMatch = text.match(/(\{.*\})/s);
-      
-      if (jsonMatch && jsonMatch[0]) {
-        try {
-          return JSON.parse(jsonMatch[0]);
-        } catch (parseError) {
-          console.error("Error parsing JSON from Gemini response:", parseError);
-          return { 
-            error: "Failed to parse JSON response",
-            overview: "A roadmap couldn't be generated in the correct format. Please try again with more details about your goal."
-          };
+      // Parse the response and extract JSON
+      let roadmap;
+      try {
+        // Find JSON content in the response
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          roadmap = JSON.parse(jsonMatch[0]);
+        } else {
+          // Fallback if no JSON structure is found
+          throw new Error("Invalid AI response format");
         }
+        return roadmap;
+      } catch (error) {
+        console.error("Error parsing Gemini response:", error);
+        throw new Error(`Failed to parse roadmap: ${error.message}`);
       }
-      
-      return { 
-        error: "Invalid response format", 
-        overview: "Could not generate a properly formatted roadmap. Please try again with more details."
-      };
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error generating goal roadmap:", error);
-      return {
-        error: error.message,
-        overview: "Failed to generate a roadmap due to a technical issue. Please try again later."
-      };
+      throw new Error(`Failed to generate roadmap: ${error.message}`);
     }
   }
 
@@ -112,9 +107,6 @@ export class OpenAIService {
     goals?: any[];
   }): Promise<string[]> {
     try {
-      // Get Gemini pro model
-      const model = geminiAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
       const prompt = `
         Based on the following user stats, generate 3 practical, specific productivity tips:
         
@@ -125,34 +117,30 @@ export class OpenAIService {
         Current Goals: ${context.goals?.map(g => g.title).join(", ") || "None"}
         
         Format the response as a JSON array of 3 strings, where each string is a productivity tip.
-        For example: ["Tip 1 here", "Tip 2 here", "Tip 3 here"]
-        
-        ONLY return the JSON array, without any additional text, explanation or markdown.
+        Only provide the JSON array with no additional text.
       `;
 
-      // Generate productivity tips
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
       
-      // Extract JSON array from response
-      const jsonMatch = text.match(/(\[.*\])/s);
-      
-      if (jsonMatch && jsonMatch[0]) {
-        try {
+      try {
+        // Try to parse as JSON directly
+        return JSON.parse(text);
+      } catch (error) {
+        // If direct parsing fails, try to extract JSON array
+        const jsonMatch = text.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
           return JSON.parse(jsonMatch[0]);
-        } catch (parseError) {
-          console.error("Error parsing JSON from Gemini response:", parseError);
         }
+        // If all parsing fails, return default tips
+        return [
+          "Try breaking down complex tasks into smaller, manageable steps.",
+          "Consider using the Pomodoro technique: 25 minutes of focused work followed by a 5-minute break.",
+          "Review and prioritize your tasks at the beginning of each day."
+        ];
       }
-      
-      // Fallback tips if parsing fails
-      return [
-        "Try breaking down complex tasks into smaller, manageable steps.",
-        "Consider using the Pomodoro technique: 25 minutes of focused work followed by a 5-minute break.",
-        "Review and prioritize your tasks at the beginning of each day."
-      ];
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error generating productivity tips:", error);
       return [
         "Try breaking down complex tasks into smaller, manageable steps.",
@@ -163,4 +151,4 @@ export class OpenAIService {
   }
 }
 
-export const openAIService = new OpenAIService();
+export const geminiService = new GeminiService();
